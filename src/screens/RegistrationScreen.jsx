@@ -54,17 +54,19 @@ const RegistrationScreen = () => {
   const useOrientation = () => {
     const [orientation, setOrientation] = useState("portrait");
 
+    const onChange = ({ window: { width, height } }) => {
+      if (width < height) {
+        setOrientation("portrait");
+      } else {
+        setOrientation("landscape");
+      }
+    };
+
     useEffect(() => {
-      Dimensions.addEventListener("change", ({ window: { width, height } }) => {
-        if (width < height) {
-          setOrientation("portrait");
-        } else {
-          setOrientation("landscape");
-        }
-      });
+      Dimensions.addEventListener("change", onChange);
     }, []);
 
-    return orientation;
+    return () => Dimensions.removeEventListener("change", onChange);
   };
 
   const bgImage = indicateBgImage();
@@ -371,7 +373,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     lineHeight: 19,
-    
   },
   showBtn: {
     position: "absolute",
